@@ -1,0 +1,15 @@
+{
+  "name": "ims-be",
+  "version": "1.0.0",
+  "description": "IMS backend",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Madhavi lad",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
