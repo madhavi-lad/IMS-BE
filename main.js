@@ -1,6 +1,6 @@
-const express = require("express")
+const libexpress = require("express")
 
-const server = express()
+const server = libexpress()
 
 server.post("/user", (req, res)=>{
     console.log("User Request")
