@@ -10,10 +10,10 @@ server.post("/user", (req, res)=>{
 
 server.get("/user", (req, res)=>{
     console.log("user request")
-    res.send(
-        [   {name: "abc"},
-            {name: "xyz"},
-            {name: "abc"}
+    res.json(
+        [   {name: "usr1"},
+            {name: "user2"},
+            {name: "user3"}
         ]
     )
 })
