@@ -1,15 +1,21 @@
 const libExpress = require("express")
-
+const cors = require("cors")
 const server = libExpress()
+server.use(cors())
 
 server.post("/user", (req, res)=>{
     console.log("user request")
-    res.send("User is created")
+    res.send("user is created")
 })
 
-server.get("/user", (req,res)=>{
-    console.log("user request through get method")
-    res.send("User is created through get method")
+server.get("/user", (req, res)=>{
+    console.log("user request")
+    res.send(
+        [   {name: "abc"},
+            {name: "xyz"},
+            {name: "abc"}
+        ]
+    )
 })
 
 server.post("/team", (req, res)=>{
