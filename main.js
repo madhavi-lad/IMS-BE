@@ -8,7 +8,7 @@ server.post("/user", (req, res)=>{
 })
 
 server.get("/user", (req,res)=>{
-    console.log("user request")
+    console.log("user request through get method")
     res.send("User is created through get method")
 })
 
@@ -26,4 +26,4 @@ server.listen(8000, ()=> {
     console.log("Server is running on port 8000")
 })
 
-//C:\dev\IMS-BE
+//    C:\dev\IMS-BE
