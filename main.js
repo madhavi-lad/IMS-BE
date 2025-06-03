@@ -1,7 +1,7 @@
 const {MongoClient} = require("mongodb")
-const libexpress = require("express")
+const libExpress = require("express")
 const cors = require("cors")
-const server = libexpress()
+const server = libExpress()
 server.use(cors())
 server.use(libExpress.json()) //converts into json format
 
