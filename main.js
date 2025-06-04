@@ -1,4 +1,4 @@
-const {MongoClient} = require("mongodb")
+const {MongoClient, Admin} = require("mongodb")
 const libRandomString = require("randomstring")
 const libExpress = require("express")
 const cors = require("cors")
@@ -94,11 +94,32 @@ server.post("/token", async (req, res)=>{
 
 
 // user role
-server.get("/user/role", (req, res) =>{
+server.get("/user/role", async (req, res) =>{
     console.log("user role request")
 
-    if(req.header.token){
+    if(req.headers.token){
         
+        await connection.connect()
+        const db = await connection.db("IMS")
+        const collection = await db.collection("USER")
+        const result = await collection.find({"token": req.headers.token}).toArray()
+
+        if(result.length > 0)
+        {
+            const user = result[0]
+
+            const roles = {
+                admin: user.is_admin === true,
+                onwer: !!user.owner_of,
+                player: !!user.playeing_for
+            }
+
+            res.status(200).json(roles)
+        }
+
+        else{
+            res.status(401).json({message: "Invalid token"})
+        }
         
     }
     else{
