@@ -63,7 +63,7 @@ server.post("/token", async (req, res)=>{
         await connection.connect()
         const db = await connection.db("IMS")
         const collection = await db.collection("USER")
-        const result = await collection.find({email: req.body.email, password: req.body.password})
+        const result = await collection.find({"email": req.body.email, "password": req.body.password}).toArray()
         
         if(result.length > 0)
         {
@@ -90,14 +90,6 @@ server.post("/token", async (req, res)=>{
         res.status(401).json({message: "All fields are required"})
     }
 
-
-    /*res.json(
-        [   {name: "usr1"},
-            {name: "user2"},
-            {name: "user3"}
-        ]
-    )
-    */
 })
 
 
