@@ -1,4 +1,5 @@
 const {MongoClient} = require("mongodb")
+const libRandomString = require("randomstring")
 const libExpress = require("express")
 const cors = require("cors")
 const server = libExpress()
@@ -31,6 +32,10 @@ server.post("/user", async (req, res)=>{
         }
     }
 
+    else{
+        res.json("Please fill all the fields!")
+    }
+
 
 
     /*
@@ -51,15 +56,39 @@ server.post("/user", async (req, res)=>{
 })
 
 //user login
-server.get("/token", (req, res)=>{
+server.post("/token", async (req, res)=>{
     console.log("user request")
 
-    connection.connect().
-    then(() => connection.db("IMS")). 
-    then((db) => db.collection("USER")). 
-    then((collection) => collection.find().toArray()). 
-    then((result) => console.log(result)). 
-    catch((error) => console.log("Database Connection error. ", error))
+    if(req.body.email && req.body.password){
+        await connection.connect()
+        const db = await connection.db("IMS")
+        const collection = await db.collection("USER")
+        const result = await collection.find({email: req.body.email, password: req.body.password})
+        
+        if(result.length > 0)
+        {
+            // genetare token
+            const generatedToken = libRandomString.generate(6)
+
+            // register token against user
+            const user = result[0]
+            
+            await collection.updateOne(
+                { _id: user._id },
+                {$set: {token: generatedToken}}
+            )
+
+            // return token to user
+            res.status(200).json({token: generatedToken})
+        }
+        else{
+            res.status(400).json({message: "Invalid email or password"})
+        }
+    }
+
+    else{
+        res.status(401).json({message: "All fields are required"})
+    }
 
 
     /*res.json(
@@ -70,6 +99,21 @@ server.get("/token", (req, res)=>{
     )
     */
 })
+
+
+// user role
+server.get("/user/role", (req, res) =>{
+    console.log("user role request")
+
+    if(req.header.token){
+        
+        
+    }
+    else{
+        res.status(401).json({message: "Unauthorized"})
+    }
+})
+
 
 server.post("/team", (req, res)=>{
     console.log("team request")
