@@ -164,28 +164,117 @@ server.get("/players/:id/stats", async (req, res) => {
         await connection.connect()
         const db = await connection.db("IMS")
         const collection = await db.collection("USER")
-        const result = await collection.findOne({ "_id": new ObjectId(req.params.id)})
+        const result = await collection.findOne({ "_id": new ObjectId(req.params.id) })
 
         res.status(200).json(result)
 
         connection.close()
     }
 
-    else{
+    else {
         res.status(400).json({ message: "Bad Request" })
     }
 
 })
 
+server.get("/manageTeam", async (req, res) => {
+    console.log("Team stats Request")
 
-server.post("/team", (req, res) => {
-    console.log("team request")
-    res.send("Team is created")
+    if (req.headers.token) {
+
+        await connection.connect()
+        const db = await connection.db("IMS")
+        const collection1 = await db.collection("USER")
+        const collection2 = await db.collection("TEAM")
+
+        const result1 = await collection1.find({ "token": req.headers.token }).toArray()
+        const user = result1[0]
+        console.log(user.owner_of)
+
+        const result2 = await collection2.findOne({ "team_id": user.owner_of })
+
+
+        if (result2) {
+            res.status(200).json(result2)
+        }
+        else {
+            res.status(400).json({ message: "Cannot find your team" })
+        }
+
+        connection.close()
+    }
+    else {
+        res.status(401).json({ message: "Invalid token" })
+    }
+
 })
 
-server.post("/player", (req, res) => {
+
+server.post("/createTeam", async (req, res) => {
+    console.log("create team request")
+
+    if (req.body.name && req.body.owner && req.body.team_id && req.body.color && req.body.logo) {
+        await connection.connect()
+        const db = await connection.db("IMS")
+        const collection = await db.collection("TEAM")
+        const result = await collection.find({ "team_id": req.body.team_id }).toArray()
+
+        if (result.length > 0)
+            res.json("Team already exist!")
+
+        else {
+            await collection.insertOne({
+                name: req.body.name,
+                owner: req.body.owner,
+                team_id: req.body.team_id,
+                color: req.body.color,
+                logo: req.body.logo
+
+            })
+            res.json("Team created successfully!")
+        }
+
+        connection.close()
+    }
+
+    else {
+        res.json("Please fill all the fields!")
+    }
+
+})
+
+server.post("/createPlayer", async (req, res) => {
     console.log("player request")
-    res.send("Player is created")
+
+    if (req.body.name && req.body.email && req.body.password && req.body.phone && req.body.playing_for && req.body.profile) {
+        await connection.connect()
+        const db = await connection.db("IMS")
+        const collection = await db.collection("USER")
+        const result = await collection.find({ "email": req.body.email }).toArray()
+
+        if (result.length > 0)
+            res.json("Player already exist!")
+
+        else {
+            await collection.insertOne({
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password,
+                phone: req.body.phone,
+                playing_for: req.body.playing_for,
+                profile: req.body.profile
+                
+            })
+            res.json("Player created successfully!")
+        }
+
+        connection.close()
+    }
+
+    else {
+        res.json("Please fill all the fields!")
+    }
+
 })
 
 server.listen(8000, () => {
